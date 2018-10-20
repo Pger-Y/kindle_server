@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -28,8 +29,11 @@ func main() {
 		var vx_resp VxMessage
 		vx_resp.ToUserName, vx_resp.FromUserName = vx_req.FromUserName, vx_req.ToUserName
 		vx_resp.MsgType = "text"
-		vx_resp.CreateTime = 1540027224
+		vx_resp.CreateTime = vx_req.CreateTime + 1
 		vx_resp.Content = "We received you message:" + vx_req.Content
+		s, err := xml.Marshal(vx_resp)
+		log.Println("xml:marshal", err)
+		log.Println(string(s))
 		c.XML(http.StatusOK, vx_resp)
 	})
 	r.Run()
