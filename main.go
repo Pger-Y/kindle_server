@@ -8,6 +8,7 @@ import (
 )
 
 type Xml struct {
+	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
 	CreateTime   int
