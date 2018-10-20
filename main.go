@@ -24,6 +24,7 @@ func main() {
 			log.Println("Parse request error", err)
 
 		}
+		log.Println("Request:", vx_req)
 		var vx_resp VxMessage
 		vx_resp.ToUserName, vx_resp.FromUserName = vx_req.FromUserName, vx_req.ToUserName
 		vx_resp.MsgType = "text"
