@@ -1,0 +1,16 @@
+package worker
+
+/*
+import (
+	"fmt"
+)
+*/
+
+type Worker interface {
+	Usage(params ...string) (string, error)
+	Info(params ...string) (string, error)
+	Register(params ...string) (string, error)
+	Send(params ...string) (string, error)
+	Feedback(params ...string) (string, error)
+	Search(params ...string) (string, error)
+}

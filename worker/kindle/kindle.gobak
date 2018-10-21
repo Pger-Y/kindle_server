@@ -1,0 +1,61 @@
+package kindle
+
+import (
+	"fmt"
+	"kindle_server/config"
+	"kindle_server/kindle/mem"
+	"kindle_server/store"
+	"kindle_server/types"
+	"log"
+	"strings"
+	"time"
+)
+
+type KindleWorker struct {
+	ucache *mem.Users
+	mtx    sync.RWmutex
+	store  *store.Store
+}
+
+func NewKindleWorker(uc *mem.Users, s *store.Store) *KindleWorker {
+	k := &KindleWorker{
+		ucache: uc,
+		store:  s,
+	}
+	return k
+
+}
+
+func (kw *KindleWorker) Register(infos ...string) (string, error) {
+	var uid, kmail, email, pwd, ss string
+	var message string
+	if len(infos) < 2 {
+		message = "Register info format error example: register:example@kindle.com|example@163.com|examplepasswd|smtp.163.com\n or [unsupport yet]register:example@kindle.com"
+		err := fmt.Errorf("register is to short")
+		return message, err
+	}
+	uid = infos[0]
+	kmail = infos[1]
+	if len(infos) >= 5 {
+		email = infos[2]
+		pwd = info[3]
+		ss = info[4]
+		if ss == "" {
+			for _, dtag := range []string{"163.com", "126.com"} {
+				if strings.Find(email, dtag) != -1 {
+					ss = fmt.Sprintf("smtp.%s", dtag)
+					break
+				}
+			}
+		}
+	}
+	u := types.NewUser(uid, kmail, email, pwd, ss)
+
+	if err := u.Validate(); err != nil {
+		message = "register info invalid,please double check"
+		err := fmt.Errorf("Invalid register info")
+		return message, err
+	}
+	kw.ucache.Put(u)
+	kw.store.User2sql(u)
+}

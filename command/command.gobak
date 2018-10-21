@@ -1,0 +1,52 @@
+package command
+
+import (
+	//"fmt"
+	"kindle_server/worker"
+	"strings"
+)
+
+type Command struct {
+	keywords map[string]struct{}
+	worker   *worker.Worker
+	split    string
+}
+
+func New() *Command {
+	c := &Command{
+		keywords: map[string]struct{}{
+			"register": struct{}{},
+			"send":     struct{}{},
+			"search":   struct{}{},
+			"help":     struct{}{},
+		},
+		split: "|",
+	}
+	return c
+}
+
+func (c *Command) Employ(w *worker.Worker) {
+	c.worker = w
+}
+
+func (c *Command) Process(userid, message_type, value string) string {
+	sl := strings.Split(value, c.split)
+	var message_ret string
+	if len(sl) < 2 && strings.ToLower(value) != "help" {
+		message_ret = "Parsing cmd error should be cmd|value,for example: send|www.example.com/example.mobi,type help for detail"
+	} else {
+		do := strings.ToLower(sl[0])
+		switch do {
+		case "help":
+			message_ret = c.worker.Usage()
+		case "register":
+			message_ret = c.worker.Register(userid, sl[1:]...)
+		case "send":
+			message_ret = c.worker.Send(userid, sl[1:]...)
+		default:
+			message_ret = "Unsupport cmd,check manual again:\n" + c.worker.Usage()
+		}
+	}
+	return message_ret
+
+}

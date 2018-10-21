@@ -1,0 +1,10 @@
+mysql:
+    host: 127.0.0.1
+    port: '3306'
+    user: root
+    password: password
+    database: kindle_server
+lifetime: 30m
+gcInterval: 1m
+split: "|"
+
