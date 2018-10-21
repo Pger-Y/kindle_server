@@ -28,7 +28,7 @@ func NewKindleWorker(uc *mem.Users, s *store.Store) *KindleWorker {
 }
 
 func (kw *KindleWorker) Usage() string {
-	s := fmt.Sprintf("Usage: \n",
+	s := fmt.Sprint("Usage: \n",
 		"register|example@kindle.com|example@163.com|examplepassword|smtp.163.com register your information\n",
 		"send(developing...)|www.example.com/example.mobi will download ebook and send it to your kindle mail\n",
 		"search(developing...)|The great gatsby will search ebook in our database that others has downloaded,yes! you are improving our data quality\n",
