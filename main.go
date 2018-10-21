@@ -1,41 +1,42 @@
 package main
 
 import (
-	"encoding/xml"
+	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/kindle_server/command"
+	"github.com/kindle_server/config"
+	"github.com/kindle_server/store"
+	"github.com/kindle_server/types"
+	"github.com/kindle_server/worker/kindle"
+	"github.com/kindle_server/worker/kindle/mem"
 	"log"
 	"net/http"
 )
 
-type Xml struct {
-	XMLName      xml.Name `xml:"xml"`
-	ToUserName   string
-	FromUserName string
-	CreateTime   int
-	MsgType      string
-	Content      string
-	Event        string
-}
-
 func main() {
 	r := gin.Default()
+	ctx := context.Background()
+	cfg, _, err := config.LoadFile("config.yaml")
+	if err != nil {
+		log.Fatal("Load Error:", err)
+	}
+	users := mem.NewUsers(ctx, cfg)
+	store, err := store.NewStore(cfg.MySQL)
+	if err != nil {
+		log.Fatal("Error while connect mysql", err)
+	}
+	w := kindle.NewKindleWorker(users, store)
+	cmd := command.New(cfg.Split, w)
+
 	r.POST("Xweixin_pathX", func(c *gin.Context) {
-		var vx_req Xml
+		var vx_req types.Xml
 		if err := c.ShouldBindXML(&vx_req); err != nil {
-			//c.XML(http.StatusOK,
 			log.Println("Parse request error", err)
 
+		} else {
+			vx_resp := cmd.Process(&vx_req)
+			c.XML(http.StatusOK, *vx_resp)
 		}
-		log.Println("Request:", vx_req)
-		var vx_resp Xml
-		vx_resp.ToUserName, vx_resp.FromUserName = vx_req.FromUserName, vx_req.ToUserName
-		vx_resp.MsgType = "text"
-		vx_resp.CreateTime = vx_req.CreateTime + 1
-		vx_resp.Content = "We received you message:" + vx_req.Content
-		s, err := xml.Marshal(vx_resp)
-		log.Println("xml:marshal", err)
-		log.Println(string(s))
-		c.XML(http.StatusOK, vx_resp)
 	})
 	r.Run()
 }
