@@ -96,7 +96,6 @@ func (kw *KindleWorker) Register(uid string, infos ...string) (string, error) {
 
 	if err := u.Validate(); err != nil {
 		message = "register info invalid,please double check"
-		err := fmt.Errorf("Invalid register info")
 		return message, err
 	}
 	kw.ucache.Put(u)
