@@ -100,6 +100,10 @@ func (kw *KindleWorker) Register(uid string, infos ...string) (string, error) {
 		return message, err
 	}
 	kw.ucache.Put(u)
-	kw.store.User2Sql(u)
-	return "Register Successfully", nil
+	err := kw.store.User2Sql(u)
+	message = "Register Successfully"
+	if err != nil {
+		message = "Register failed please send a message"
+	}
+	return message, err
 }

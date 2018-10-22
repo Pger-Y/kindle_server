@@ -26,6 +26,6 @@ func NewStore(c *config.MySQLConfig) (*Store, error) {
 }
 
 func (s *Store) User2Sql(u *types.UserInfo) error {
-	err := s.cli.Replace(s.tb_user, s.col_user, u.Userid, u.KindleAddress)
+	err := s.cli.Replace(s.tb_user, s.col_user, u.Userid, u.KindleAddress, u.MailAddress, u.Passwd, u.SmtpServer)
 	return err
 }
