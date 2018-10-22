@@ -46,7 +46,7 @@ func (c *Command) Process(vx_req *types.Xml) *types.Xml {
 		ret, err := c.worker.Exec(vx_req.FromUserName, vx_req.MsgType, values...)
 		vx_resp.Content = ret
 		if err != nil {
-			log.Println("Error while process ", vx_req)
+			log.Println("Error while process ", vx_req, err)
 		}
 	}
 	return &vx_resp
