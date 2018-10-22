@@ -62,9 +62,12 @@ func mail_validate(m string) error {
 	if err := checkmail.ValidateFormat(m); err != nil {
 		return err
 	}
-	if err := checkmail.ValidateHost(m); err != nil {
-		return err
-	}
+	// is too slow to varify host
+	/*
+		if err := checkmail.ValidateHost(m); err != nil {
+			return err
+		}
+	*/
 	return nil
 }
 
