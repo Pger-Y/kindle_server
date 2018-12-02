@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	cal "github.com/calculate-go"
+	cal "github.com/Pger-Y/calculate-go"
 	"github.com/kindle_server/types"
 )
 
@@ -31,12 +31,17 @@ func (a *Account) Usage() string {
 	return s
 }
 
-func (a *Account) expr(uid uint64, info string) (string, error) {
+func (a *Account) Expr(uid uint64, info string) (string, error) {
 	a.mtx.RLock()
 	defer a.mtx.RUnlock()
+	var find_key string
 	if m, ok := a.data[uid]; ok {
 		for k, v := range m {
-			v_s := strconv.FormatFloat(v, 'f', 10, 64)
+			if strings.Index(info, k) == -1 {
+				continue
+			}
+			find_key = k
+			v_s := strconv.FormatFloat(v, 'f', 2, 64)
 			info = strings.Replace(info, k, v_s, -1)
 		}
 	}
@@ -46,33 +51,38 @@ func (a *Account) expr(uid uint64, info string) (string, error) {
 		return m, fmt.Errorf(m)
 	} else {
 		message := fmt.Sprintf("%s = %f", info, v)
+		if find_key != "" {
+			a.save(uid, find_key, v)
+		}
 		return message, nil
 	}
 
 }
 
-func (a *Account) save(uid uint64, info string) (string, error) {
+func (a *Account) set(uid uint64, info string) (string, error) {
 	args := strings.Split(info, "=")
 	if len(args) < 2 {
 		return types.ArgErrorMessage, types.ArgFormatError
 	}
 	var_value := args[0]
 	v_str := args[1]
-	var value float64
 	if vf, err := strconv.ParseFloat(v_str, 64); err != nil {
 		return types.ArgFormatErrorMessage, types.ArgFormatError
 	} else {
-		value = vf
+		a.save(uid, var_value, vf)
 	}
 
+	return "设置成功", nil
+}
+
+func (a *Account) save(uid uint64, k string, v float64) {
 	a.mtx.Lock()
 	defer a.mtx.Unlock()
 	_, ok := a.data[uid]
 	if !ok {
 		a.data[uid] = map[string]float64{}
 	}
-	a.data[uid][var_value] = value
-	return "设置成功", nil
+	a.data[uid][k] = v
 }
 
 func (a *Account) Exec(uid, msg_type string, infos ...string) (string, error) {
@@ -87,9 +97,9 @@ func (a *Account) Exec(uid, msg_type string, infos ...string) (string, error) {
 		do := strings.ToLower(infos[0])
 		switch do {
 		case "save":
-			return a.save(uh, infos[1])
+			return a.set(uh, infos[1])
 		case "expr":
-			return a.expr(uh, infos[1])
+			return a.Expr(uh, infos[1])
 		}
 	}
 	m := "Account Parse Error!"
