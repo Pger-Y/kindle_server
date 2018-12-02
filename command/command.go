@@ -74,11 +74,14 @@ func (c *Command) Process(vx_req *types.Xml) *types.Xml {
 				message, err := c.defaultFunc(uid, vx_req.Content)
 				if err == nil {
 					vx_resp.Content = message
+				} else {
+					vx_resp.Content = "默认功能无法进行处理，请进行检查后重试"
 				}
+			} else {
+				//TODO
+				// 增加相关功能的displa
+				vx_resp.Content = "未找到相关功能，检查输入以及格式"
 			}
-			//TODO
-			// 增加相关功能的displa
-			vx_resp.Content = "未找到相关功能，检查输入以及格式"
 		} else {
 			ret, err := worker.Exec(vx_req.FromUserName, vx_req.MsgType, values[1:]...)
 			vx_resp.Content = ret
