@@ -7,6 +7,7 @@ import (
 	"github.com/kindle_server/config"
 	"github.com/kindle_server/store"
 	"github.com/kindle_server/types"
+	"github.com/kindle_server/worker/account"
 	"github.com/kindle_server/worker/kindle"
 	"github.com/kindle_server/worker/kindle/mem"
 	"log"
@@ -25,8 +26,11 @@ func main() {
 	if err != nil {
 		log.Fatal("Error while connect mysql", err)
 	}
-	w := kindle.NewKindleWorker(users, store)
-	cmd := command.New(cfg.Split, w)
+	work_kindle := kindle.NewKindleWorker(users, store)
+	account := account.NewAccount()
+	cmd := command.New(cfg.Split)
+	cmd.AddWorker("kindle", work_kindle)
+	cmd.AddWorker("cal", account)
 
 	r.POST("Xweixin_pathX", func(c *gin.Context) {
 		var vx_req types.Xml

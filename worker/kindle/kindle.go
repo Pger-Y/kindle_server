@@ -9,12 +9,10 @@ import (
 	//"log"
 	"strings"
 	//"time"
-	"sync"
 )
 
 type KindleWorker struct {
 	ucache *mem.Users
-	mtx    sync.RWMutex
 	store  *store.Store
 }
 
