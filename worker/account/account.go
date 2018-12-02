@@ -50,7 +50,7 @@ func (a *Account) Expr(uid uint64, info string) (string, error) {
 		m := fmt.Sprintf("calculate error[%s],check expression", err.Error())
 		return m, fmt.Errorf(m)
 	} else {
-		message := fmt.Sprintf("%s = %f", info, v)
+		message := fmt.Sprintf("%s = %.2f", info, v)
 		if find_key != "" {
 			a.save(uid, find_key, v)
 		}
