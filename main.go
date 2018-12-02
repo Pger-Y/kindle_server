@@ -31,6 +31,7 @@ func main() {
 	cmd := command.New(cfg.Split)
 	cmd.AddWorker("kindle", work_kindle)
 	cmd.AddWorker("cal", account)
+	cmd.SetDefault(account.Expr)
 
 	r.POST("Xweixin_pathX", func(c *gin.Context) {
 		var vx_req types.Xml

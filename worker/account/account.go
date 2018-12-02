@@ -33,7 +33,6 @@ func (a *Account) Usage() string {
 
 func (a *Account) Expr(uid uint64, info string) (string, error) {
 	a.mtx.RLock()
-	defer a.mtx.RUnlock()
 	var find_key string
 	if m, ok := a.data[uid]; ok {
 		for k, v := range m {
@@ -45,6 +44,7 @@ func (a *Account) Expr(uid uint64, info string) (string, error) {
 			info = strings.Replace(info, k, v_s, -1)
 		}
 	}
+	a.mtx.RUnlock()
 	v, err := cal.Calculate(info)
 	if err != nil {
 		m := fmt.Sprintf("calculate error[%s],check expression", err.Error())
@@ -96,7 +96,7 @@ func (a *Account) Exec(uid, msg_type string, infos ...string) (string, error) {
 	} else {
 		do := strings.ToLower(infos[0])
 		switch do {
-		case "save":
+		case "set":
 			return a.set(uh, infos[1])
 		case "expr":
 			return a.Expr(uh, infos[1])
