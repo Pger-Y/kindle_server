@@ -59,6 +59,7 @@ func (c *Command) SetDefault(f func(uint64, string) (string, error)) {
 func (c *Command) Process(vx_req *types.Xml) *types.Xml {
 	var vx_resp types.Xml
 	vx_resp.ToUserName, vx_resp.FromUserName = vx_req.FromUserName, vx_req.ToUserName
+	log.Println(vx_req)
 	vx_resp.MsgType = "text"
 	vx_resp.CreateTime = vx_req.CreateTime + 1
 	uid_str := types.Uid(vx_req.FromUserName)

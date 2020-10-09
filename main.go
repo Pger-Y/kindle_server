@@ -43,5 +43,18 @@ func main() {
 			c.XML(http.StatusOK, *vx_resp)
 		}
 	})
+	r.POST("/vx/sendvx", func(c *gin.Context) {
+		var message_req types.MessageReq
+		if err := c.ShouldBindJSON(&message_req); err != nil {
+			log.Println("Parse request error:", err)
+		} else {
+			//_ = message
+			mr := types.MessageResp{
+				Code:    0,
+				Message: "success",
+			}
+			c.JSON(http.StatusOK, mr)
+		}
+	})
 	r.Run()
 }
